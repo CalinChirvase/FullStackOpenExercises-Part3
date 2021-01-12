@@ -1,5 +1,3 @@
-//mongo "mongodb+srv://cluster0.eqfwu.mongodb.net/<dbname>" --username admin
-
 const mongoose = require('mongoose')
 
 if (process.argv.length < 3) {
