@@ -25,8 +25,8 @@ app.use(errorHandler)
 
 
 //logger
-morgan.token('data', (req, res) => {
-    return JSON.stringify(req.body)
+morgan.token('data', (req,) => {
+  return JSON.stringify(req.body)
 })
 
 app.use(morgan(':method :url :response-time :data'))
@@ -58,26 +58,8 @@ app.get('/info', (req, res) => {
     })
 })
 
-
-//const generateId = () => {
-//  return Math.random() * 1000000
-//}
-
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-
-  if (!body.name || !body.number) {
-    return response.status(400).json({ 
-      error: 'content missing' 
-    })
-  }
-
-  //const match = persons.filter(person => person.name === body.name)
-  //if ( match.length !== 0) {
-   //   return response.status(400).json({
-    //      error: 'name must be unique'
-    //  })
-  //}
 
   const person = new Person({
     name: body.name,
@@ -87,7 +69,7 @@ app.post('/api/persons', (request, response, next) => {
   person.save().then(savedPerson => {
     response.json(savedPerson.toJSON())
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -113,6 +95,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
+app.use(errorHandler)
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
