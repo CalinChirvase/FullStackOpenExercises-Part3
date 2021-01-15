@@ -3,6 +3,7 @@ const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
 require('dotenv').config()
+const Person = require('./models/person')
 
 app.use(express.static('build'))
 app.use(express.json())
@@ -22,7 +23,6 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(errorHandler)
 
-const Person = require('./models/person')
 
 //logger
 morgan.token('data', (req, res) => {
@@ -32,10 +32,6 @@ morgan.token('data', (req, res) => {
 app.use(morgan(':method :url :response-time :data'))
 
 //api routes
-
-app.get('/', (req, res) => {
-  res.send('<h1>Hello World!</h1>')
-})
 
 app.get('/api/persons', (req, res) => {
   Person.find({}).then(persons => {
@@ -55,16 +51,19 @@ app.get('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-//app.get('/info', (req, res) => {
-//    res.send(`<div> <p>Phonebook has info for ${persons.length} people </p> <p>${Date()}</p> </div>`)
-//})
+app.get('/info', (req, res) => {
+  Person.find({})
+    .then(persons => {
+      res.send(`<div> <p>Phonebook has info for ${persons.length} people </p> <p>${Date()}</p> </div>`)
+    })
+})
 
 
 const generateId = () => {
   return Math.random() * 1000000
 }
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if (!body.name || !body.number) {
@@ -87,9 +86,9 @@ app.post('/api/persons', (request, response) => {
   })
 
   person.save().then(savedPerson => {
-    response.json(savedPerson)
+    response.json(savedPerson.toJSON())
   })
-  response.json(person)
+  .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -102,14 +101,14 @@ app.put('/api/persons/:id', (request, response, next) => {
 
   Person.findByIdAndUpdate(request.params.id, person, { new: true })
     .then(updatedPerson => {
-      response.json(updatedPerson)
+      response.json(updatedPerson.toJSON())
     })
     .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
