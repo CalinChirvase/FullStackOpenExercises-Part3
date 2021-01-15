@@ -59,9 +59,9 @@ app.get('/info', (req, res) => {
 })
 
 
-const generateId = () => {
-  return Math.random() * 1000000
-}
+//const generateId = () => {
+//  return Math.random() * 1000000
+//}
 
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
@@ -80,7 +80,7 @@ app.post('/api/persons', (request, response, next) => {
   //}
 
   const person = new Person({
-    id: generateId(),
+   // id: generateId(),
     name: body.name,
     number: body.number,
   })
